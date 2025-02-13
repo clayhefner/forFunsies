@@ -43,6 +43,32 @@
         font-weight: bold;
         min-height: 24px;
       }
+      .tag-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin: 10px auto;
+      }
+      .tag {
+        background-color: #eee;
+        border-radius: 15px;
+        padding: 5px 10px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .tag button {
+        background: none;
+        border: none;
+        color: #666;
+        margin-left: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .tag button:hover {
+        color: red;
+      }
     </style>
   </head>
   <body>
@@ -50,6 +76,11 @@
       <h2>Who Should Demo Next?</h2>
       <p>Aka Bobby's polite "you have to go" app</p>
 
+      <div id="optionsList"></div>
+      <div id="inputContainer">
+        <input type="text" id="newOption" placeholder="Enter new option" />
+        <button onclick="addOption()">Add Option</button>
+      </div>
       <button onclick="pickLeader()">Pick Someone</button>
       <div id="result"></div>
     </div>
@@ -57,12 +88,35 @@
     <!-- Confetti library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
-      let options = [
-        "Bravo",
-        "Echo",
-        "Bobby has to demo what he's been doing",
-        "Look at one of Clay's janky PoCs",
-      ];
+      let options = ["Bravo", "Echo", "Bobby has to demo what he's been doing"];
+
+      function updateOptionsList() {
+        const optionsList = document.getElementById("optionsList");
+        optionsList.innerHTML =
+          "<h3>Remaining Options:</h3>" +
+          `<div class="tag-container">` +
+          options
+            .map(
+              (option, index) =>
+                `<div class="tag">${option}<button onclick="removeOption(${index})">&times;</button></div>`
+            )
+            .join("") +
+          "</div>";
+      }
+
+      function addOption() {
+        const newOption = document.getElementById("newOption").value;
+        if (newOption) {
+          options.push(newOption);
+          document.getElementById("newOption").value = "";
+          updateOptionsList();
+        }
+      }
+
+      function removeOption(index) {
+        options.splice(index, 1);
+        updateOptionsList();
+      }
 
       function pickLeader() {
         // If there are no more options, show Windows crash screen.
@@ -80,6 +134,9 @@
 
         // Display result
         document.getElementById("result").innerText = chosenOne;
+
+        // Update options list
+        updateOptionsList();
 
         // Trigger confetti
         triggerConfetti();
@@ -117,10 +174,13 @@
         document.body.innerHTML = `
                 <div style="background-color: #0000aa; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 20px; box-sizing: border-box;">
                     <h1 style="font-size: 3em; margin: 0;">:(</h1>
-                    <p>A problem has been detected. Patrick and Ukasha need to fix it.</p>
+                    <p>A problem has been detected. You picked more options than available. Patrick and Ukasha need to fix it.</p>
                 </div>
             `;
       }
+
+      // Initial update of options list
+      updateOptionsList();
     </script>
   </body>
 </html>
