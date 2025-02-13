@@ -133,6 +133,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
       let options = ["Bravo", "Echo", "Bobby has to demo what he's been doing"];
+      let stage2Options = [];
 
       function setCookie(name, value, days) {
         const d = new Date();
@@ -191,17 +192,17 @@
 
       function pickLeader() {
         // If there are no more options, show Windows crash screen.
-        if (options.length === 0) {
+        if (stage2Options.length === 0) {
           doWindowsCrash();
           return;
         }
 
         // Pick random
-        const randomIndex = Math.floor(Math.random() * options.length);
-        const chosenOne = options[randomIndex];
+        const randomIndex = Math.floor(Math.random() * stage2Options.length);
+        const chosenOne = stage2Options[randomIndex];
 
         // Remove chosen item from the array
-        options.splice(randomIndex, 1);
+        stage2Options.splice(randomIndex, 1);
 
         // Display result
         document.getElementById("result").innerText = chosenOne;
@@ -252,6 +253,7 @@
 
       function startStage2() {
         setCookie("demoOptions", JSON.stringify(options), 7); // store current options in cookie
+        stage2Options = [...options]; // Copy options to stage2Options
         document.getElementById("stage1").style.display = "none";
         document.getElementById("stage2").style.display = "block";
       }
