@@ -12,7 +12,12 @@
         align-items: center;
         justify-content: center;
         height: 100vh;
-        background-color: #f4f4f4;
+        background: linear-gradient(
+          to bottom,
+          #163673,
+          #2a5298,
+          #576a93
+        ); /* Improved gradient effect */
         margin: 0;
         padding: 0;
       }
@@ -47,7 +52,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        justify-content: center;
+        justify-content: flex-start; /* Left align contents */
         margin: 10px auto;
       }
       .tag {
@@ -69,18 +74,57 @@
       .tag button:hover {
         color: red;
       }
+      .card {
+        background-color: #fafafa;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 15px 0;
+        text-align: left; /* Left align contents */
+        max-width: 600px; /* Increased width */
+        margin-left: auto;
+        margin-right: auto;
+      }
+      #inputContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      #newOption {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px;
+        width: 60%;
+        font-size: 16px;
+      }
+      #startMeetingContainer {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+        margin-top: 10px;
+      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h2>Who Should Demo Next?</h2>
-      <p>Aka Bobby's polite "you have to go" app</p>
-
-      <div id="optionsList"></div>
-      <div id="inputContainer">
-        <input type="text" id="newOption" placeholder="Enter new option" />
-        <button onclick="addOption()">Add Option</button>
+    <div class="container" id="stage1">
+      <h2>Random Order Picker!</h2>
+      <p>Enter the people/topics below and click "Start Meeting" to begin.</p>
+      <div class="card">
+        <div id="optionsList"></div>
+        <div id="inputContainer">
+          <input type="text" id="newOption" placeholder="Enter new option" />
+          <button onclick="addOption()">Add Option</button>
+        </div>
       </div>
+      <div id="startMeetingContainer">
+        <button onclick="startStage2()">Start Meeting</button>
+      </div>
+    </div>
+
+    <div class="container" id="stage2" style="display: none">
+      <h2>Start Picking!</h2>
       <button onclick="pickLeader()">Pick Someone</button>
       <div id="result"></div>
     </div>
@@ -90,10 +134,36 @@
     <script>
       let options = ["Bravo", "Echo", "Bobby has to demo what he's been doing"];
 
+      function setCookie(name, value, days) {
+        const d = new Date();
+        d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+        const expires = "expires=" + d.toUTCString();
+        document.cookie =
+          name + "=" + encodeURIComponent(value) + ";" + expires + ";path=/";
+      }
+
+      function getCookie(name) {
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(";");
+        for (let c of ca) {
+          while (c.charAt(0) === " ") c = c.substring(1);
+          if (c.indexOf(name + "=") === 0) {
+            return c.substring(name.length + 1);
+          }
+        }
+        return "";
+      }
+
+      // Initialize options from cookie if available
+      const storedOptions = getCookie("demoOptions");
+      if (storedOptions) {
+        options = JSON.parse(storedOptions);
+      }
+
       function updateOptionsList() {
         const optionsList = document.getElementById("optionsList");
         optionsList.innerHTML =
-          "<h3>Remaining Options:</h3>" +
+          "<h3>Current Selections</h3>" +
           `<div class="tag-container">` +
           options
             .map(
@@ -102,6 +172,7 @@
             )
             .join("") +
           "</div>";
+        setCookie("demoOptions", JSON.stringify(options), 7); // update cookie on change
       }
 
       function addOption() {
@@ -178,6 +249,21 @@
                 </div>
             `;
       }
+
+      function startStage2() {
+        setCookie("demoOptions", JSON.stringify(options), 7); // store current options in cookie
+        document.getElementById("stage1").style.display = "none";
+        document.getElementById("stage2").style.display = "block";
+      }
+
+      document
+        .getElementById("newOption")
+        .addEventListener("keypress", function (event) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            addOption();
+          }
+        });
 
       // Initial update of options list
       updateOptionsList();
