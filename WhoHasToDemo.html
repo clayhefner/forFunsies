@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo Leader Picker</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      #result {
+        margin-top: 20px;
+        font-size: 20px;
+        font-weight: bold;
+        min-height: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Who Should Demo Next?</h2>
+      <p>Aka Bobby's polite "you have to go" app</p>
+
+      <button onclick="pickLeader()">Pick Someone</button>
+      <div id="result"></div>
+    </div>
+
+    <!-- Confetti library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+      let options = [
+        "Bravo",
+        "Echo",
+        "Bobby has to demo what he's been doing",
+        "Look at one of Clay's janky PoCs",
+      ];
+
+      function pickLeader() {
+        // If there are no more options, show Windows crash screen.
+        if (options.length === 0) {
+          doWindowsCrash();
+          return;
+        }
+
+        // Pick random
+        const randomIndex = Math.floor(Math.random() * options.length);
+        const chosenOne = options[randomIndex];
+
+        // Remove chosen item from the array
+        options.splice(randomIndex, 1);
+
+        // Display result
+        document.getElementById("result").innerText = chosenOne;
+
+        // Trigger confetti
+        triggerConfetti();
+      }
+
+      function triggerConfetti() {
+        // run confetti for about a second
+        const duration = 1 * 1000; // 1 second
+        const end = Date.now() + duration;
+
+        (function frame() {
+          // Launch two small bursts from opposite sides
+          confetti({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+          });
+          confetti({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+          });
+
+          // keep going until time is up
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        })();
+      }
+
+      function doWindowsCrash() {
+        // Replace the entire page content with a Windows crash (BSOD)-style screen
+        document.body.innerHTML = `
+                <div style="background-color: #0000aa; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 20px; box-sizing: border-box;">
+                    <h1 style="font-size: 3em; margin: 0;">:(</h1>
+                    <p>A problem has been detected. Patrick and Ukasha need to fix it.</p>
+                </div>
+            `;
+      }
+    </script>
+  </body>
+</html>
