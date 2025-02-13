@@ -244,11 +244,19 @@
       function doWindowsCrash() {
         // Replace the entire page content with a Windows crash (BSOD)-style screen
         document.body.innerHTML = `
-                <div style="background-color: #0000aa; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 20px; box-sizing: border-box;">
+                <div id="crashScreen" style="background-color: #0000aa; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; padding: 20px; box-sizing: border-box;">
                     <h1 style="font-size: 3em; margin: 0;">:(</h1>
                     <p>A problem has been detected. You picked more options than available. Patrick and Ukasha need to fix it.</p>
                 </div>
             `;
+        document
+          .getElementById("crashScreen")
+          .addEventListener("click", function () {
+            document.body.innerHTML = originalContent;
+            document.getElementById("stage1").style.display = "block";
+            document.getElementById("stage2").style.display = "none";
+            updateOptionsList();
+          });
       }
 
       function startStage2() {
@@ -266,6 +274,9 @@
             addOption();
           }
         });
+
+      // Store the original content of the body to restore later
+      const originalContent = document.body.innerHTML;
 
       // Initial update of options list
       updateOptionsList();
